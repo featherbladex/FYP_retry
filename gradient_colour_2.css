@@ -56,3 +56,10 @@ canvas:hover {
   mask-image: radial-gradient(circle, rgb(0, 0, 0) 50%, rgba(0, 0, 0, 0) 51%);
 }
 
+.instructions{
+  background-color: #ffffff;
+  
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
