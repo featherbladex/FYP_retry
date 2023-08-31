@@ -7,8 +7,9 @@ request.send();
 request.onload = () =>{
   console.log(request);
   if (request.status == 200){
-    let data = JSON.parse(request.response);
+    const data = JSON.parse(request.response);
     let colours_list = data.colors;
+    //colour_name(colours_list);
   }
   else{
     console.log(`error ${request.status} ${request.statusText}`)
@@ -32,7 +33,8 @@ var colorLabel = document.getElementById('color-label');
 var x = 0;
 var y = 0;
 var drag = false;
-var rgbaColor = 'rgba(255,0,0,1)';
+var rgbaColor = 'rgba(255,0,0)';
+
 
 var add_colour = document.getElementById('add_colour');
 
@@ -55,7 +57,11 @@ function click(e) {
   x = e.offsetX;
   y = e.offsetY;
   var imageData = ctx2.getImageData(x, y, 1, 1).data;
-  rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
+  r = imageData[0]
+  g = imageData[1]
+  b = imageData[2]
+  rgbaColor = 'rgba(' + r + ',' + g + ',' + b + ',1)';
+  
   fillGradient();
 }
 
@@ -116,26 +122,100 @@ function showImg() {
   show.setAttribute("height", "100");
   show.setAttribute("alt", "test");
   show.setAttribute("class","show");
+  
   //show.setAttribute("id",col_id);
 
   show.style.backgroundColor= rgbaColor;
-  let del = document.createElement("button","class = del");
-  let edit = document.createElement("button","class = edit");
+
+  const del = document.createElement("button","class = del");
+  const edit = document.createElement("button","class = edit");
 
   document.getElementById("palette").appendChild(show);
   document.getElementById("palette").appendChild(del);
   document.getElementById("palette").appendChild(edit);
 
+  info_box();
+ 
 }
 
-del.addEventListener("click",Delete());
+del.onclick=Delete();
+edit.onclick=Edit();
 
-edit.addEventListener("click",Edit());
-
-function Delete(){
+function Delete(e){
   console.log("delete button pushed")
 }
 
-function Edit(){
+function Edit(e){
   console.log("edit button pushed")
 }
+
+/*
+function colour_name(colours_list){
+  
+  let api_colours= colours_list;
+
+  
+  let text = "";
+  for (let i = 0; i < api_colours.length; i++) {
+    if(api_colours[i].hex == hex_code){
+      text +=  JSON.stringify(api_colours[i].name) + " " +JSON.stringify(api_colours[i].hex)+ "<br>";
+    }
+    
+  }
+
+  console.log(text);
+}*/
+
+
+
+function colour_convert(){
+
+  let rgbaconvert= rgbaColor;
+  let rgbanum = rgbaconvert.replaceAll(/[{()}[\]]/g, '').split("rgba");
+  let colour_numbers = rgbanum[1]
+
+  let colourarr = colour_numbers.split(",");
+
+  let num_arr = []
+  for (let i = 0; i < colourarr.length; i++) {
+    num_arr.push(parseInt(colourarr[i]));
+ 
+  }   
+  r= num_arr[0];
+  g= num_arr[1];
+  b= num_arr[2];
+
+  let hex_code = rbgtohex(r,g,b)
+
+  //console.log(hex_code);
+
+  return hex_code;
+
+}
+
+function rbgtohex (r,g,b){
+  return "#" + HexVal(r) + HexVal(g) + HexVal(b);
+}
+
+function HexVal(c){
+  var hex = c.toString(16);
+  
+  return hex.length == 1 ? "0" + hex:hex;
+}
+
+function info_box(){
+
+  hex = colour_convert();
+  console.log(hex);
+
+  var info = document.getElementById("info");
+  var colour_choice = document.createElement("p");
+  colour_choice.innerHTML= `the colour that you chose is ${hex}` ;
+
+  info.appendChild(colour_choice);
+ 
+  
+
+}
+
+
