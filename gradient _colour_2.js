@@ -1,21 +1,3 @@
-
-
-//api call
-let request = new XMLHttpRequest();
-request.open("GET", 'https://api.color.pizza/v1/?list=bestOf');
-request.send();
-request.onload = () =>{
-  console.log(request);
-  if (request.status == 200){
-    const data = JSON.parse(request.response);
-    let colours_list = data.colors;
-    //colour_name(colours_list);
-  }
-  else{
-    console.log(`error ${request.status} ${request.statusText}`)
-  }
-}
-
 //colour variables
 
 var colorBlock = document.getElementById('color-block');
@@ -127,19 +109,35 @@ function showImg() {
 
   show.style.backgroundColor= rgbaColor;
 
-  const del = document.createElement("button","class = del");
-  const edit = document.createElement("button","class = edit");
+  //const del = document.createElement("button","class = del");
+  ///const edit = document.createElement("button","class = edit");
 
   document.getElementById("palette").appendChild(show);
-  document.getElementById("palette").appendChild(del);
-  document.getElementById("palette").appendChild(edit);
+  //document.getElementById("palette").appendChild(del);
+  //document.getElementById("palette").appendChild(edit);
 
   info_box();
  
 }
 
-del.onclick=Delete();
-edit.onclick=Edit();
+function info_box(){
+
+  let hex = hex_finder();
+  console.log("info box hex:",hex);
+
+  let col_name = colour_api_check(hex);
+  console.log("info box col_name:",col_name);
+
+  var info = document.getElementById("info");
+  var colour_choice = document.createElement("p");
+  colour_choice.innerHTML= `The colour that you chose is ${col_name}. It has the hex code : ${hex}` ;
+
+  info.appendChild(colour_choice);
+
+}
+
+//del.onclick=Delete();
+//edit.onclick=Edit();
 
 function Delete(e){
   console.log("delete button pushed")
@@ -149,26 +147,53 @@ function Edit(e){
   console.log("edit button pushed")
 }
 
-/*
-function colour_name(colours_list){
-  
-  let api_colours= colours_list;
 
-  
-  let text = "";
-  for (let i = 0; i < api_colours.length; i++) {
-    if(api_colours[i].hex == hex_code){
-      text +=  JSON.stringify(api_colours[i].name) + " " +JSON.stringify(api_colours[i].hex)+ "<br>";
+function colour_api_check(hex){
+  //api call
+ 
+  const request = new XMLHttpRequest();
+  request.open("GET", 'https://api.color.pizza/v1/?list=bestOf');
+  request.send();
+
+  request.onload = () =>{
+    //console.log(request);
+    let colour_name;
+
+    if (request.status == 200){
+
+      let data = JSON.parse(request.response);
+      let colours = data.colors;
+      
+      console.log("api check colour name initial:",colour_name);
+      
+
+      let hex_code = hex;
+      console.log("api check hex:",hex_code);
+          
+      for (let i = 0; i < colours.length; i++) {
+        if(colours[i].hex == hex_code){
+          colour_name = JSON.stringify(colours[i].name)
+          console.log("api check colour name assignment:",colour_name);   
+          
+        }
+      } 
+      console.log("api check colour name post loop:",colour_name);
+      
+      
     }
-    
+    else{
+      console.log(`error ${request.status} ${request.statusText}`)
+    }
+   
   }
+  //console.log("api check colour name function level:",colour_name);        
+  return colour_name;
 
-  console.log(text);
-}*/
+}
 
 
 
-function colour_convert(){
+function hex_finder(){
 
   let rgbaconvert= rgbaColor;
   let rgbanum = rgbaconvert.replaceAll(/[{()}[\]]/g, '').split("rgba");
@@ -203,19 +228,6 @@ function HexVal(c){
   return hex.length == 1 ? "0" + hex:hex;
 }
 
-function info_box(){
 
-  hex = colour_convert();
-  console.log(hex);
-
-  var info = document.getElementById("info");
-  var colour_choice = document.createElement("p");
-  colour_choice.innerHTML= `the colour that you chose is ${hex}` ;
-
-  info.appendChild(colour_choice);
- 
-  
-
-}
 
 
