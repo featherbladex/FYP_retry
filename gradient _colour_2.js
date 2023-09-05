@@ -149,15 +149,18 @@ function Edit(e){
 
 
 function colour_api_check(hex){
+  
+  let colour_name;
+  
   //api call
- 
   const request = new XMLHttpRequest();
   request.open("GET", 'https://api.color.pizza/v1/?list=bestOf');
-  request.send();
+  
+  
 
   request.onload = () =>{
     //console.log(request);
-    let colour_name;
+    
 
     if (request.status == 200){
 
@@ -186,6 +189,7 @@ function colour_api_check(hex){
     }
    
   }
+  request.send();
   //console.log("api check colour name function level:",colour_name);        
   return colour_name;
 
