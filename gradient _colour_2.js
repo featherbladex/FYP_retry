@@ -125,7 +125,7 @@ function info_box(){
   let hex = hex_finder();
   console.log("info box hex:",hex);
 
-  let col_name = colour_api_check(hex);
+  let col_name = colour_search(hex);
   console.log("info box col_name:",col_name);
 
   var info = document.getElementById("info");
@@ -147,52 +147,54 @@ function Edit(e){
   console.log("edit button pushed")
 }
 
+const sendRequest = (method,url) =>{
+  const apiPromise = new Promise((resolve,reject) =>{
+    const request = new XMLHttpRequest();
+    request.open(method,url);
 
-function colour_api_check(hex){
-  
-  let colour_name;
-  
-  //api call
-  const request = new XMLHttpRequest();
-  request.open("GET", 'https://api.color.pizza/v1/?list=bestOf');
-  
-  
+    request.onload = () =>{
+      console.log(request);
+      resolve(request.response);
+    }
 
-  request.onload = () =>{
-    //console.log(request);
+    request.send();
+
+  })
+  return apiPromise;
+}
+
+
+function colour_search(hex){
+  
+  sendRequest("GET", 'https://api.color.pizza/v1/?list=bestOf').then(responseData =>{
+    let hex_code = hex;
+    console.log("api check hex:",hex_code);
+
+    let colour_name;
+    console.log("api check colour name initial:",colour_name);
+
+    //api call  "GET", 'https://api.color.pizza/v1/?list=bestOf'
+      
     
-
-    if (request.status == 200){
-
-      let data = JSON.parse(request.response);
-      let colours = data.colors;
-      
-      console.log("api check colour name initial:",colour_name);
-      
-
-      let hex_code = hex;
-      console.log("api check hex:",hex_code);
+    let data = JSON.parse(responseData);
+    let colours = data.colors;  
           
-      for (let i = 0; i < colours.length; i++) {
-        if(colours[i].hex == hex_code){
-          colour_name = JSON.stringify(colours[i].name)
-          console.log("api check colour name assignment:",colour_name);   
-          
-        }
-      } 
-      console.log("api check colour name post loop:",colour_name);
-      
-      
-    }
-    else{
-      console.log(`error ${request.status} ${request.statusText}`)
-    }
+    for (let i = 0; i < colours.length; i++) {
+      if(colours[i].hex == hex_code){
+        colour_name = JSON.stringify(colours[i].name)
+        console.log("api check colour name assignment:",colour_name);   
+        
+      }
+    } 
+    console.log("api check colour name post loop:",colour_name);
    
-  }
-  request.send();
-  //console.log("api check colour name function level:",colour_name);        
-  return colour_name;
+  
+    //console.log("api check colour name function level:",colour_name);        
+    return colour_name;
 
+  })
+
+  
 }
 
 
